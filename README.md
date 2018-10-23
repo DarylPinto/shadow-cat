@@ -1,8 +1,8 @@
 # Shadow Cat
 
-> Get your Shadowplays online quickly! 
+> Get your Shadowplays online quickly! 🚀
 
-![Preview](https://cdn.discordapp.com/attachments/451900905856696320/504052929586659358/unknown.png)
+![Preview](https://i.imgur.com/NLtPHNn.png)
 
 ## How to use
 
@@ -19,4 +19,4 @@ Now you don't have to! Open your video in Shadow Cat, and you'll have a link to 
 
 ## Downloads
 
-* [Windows]
+* [Windows](https://github.com/DarylPinto/shadow-cat/releases/download/v1.0.0/Shadow.Cat.zip)

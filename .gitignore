@@ -1,0 +1,6 @@
+__pycache__/
+build/
+dist/
+box/*
+!box/icon.ico
+!box/layout.ui

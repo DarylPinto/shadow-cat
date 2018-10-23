@@ -2,7 +2,7 @@
 
 > Get your Shadowplays online quickly! 🚀
 
-![Preview](https://i.imgur.com/NLtPHNn.png)
+![Preview](https://i.imgur.com/HD1FEGL.png)
 
 ## How to use
 

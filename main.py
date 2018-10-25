@@ -10,12 +10,13 @@ class Window(QMainWindow):
 
 	def __init__(self):
 		super(Window, self).__init__()
-		loadUi('box/layout.ui', self)
+		loadUi("box/layout.ui", self)
 		self.background_thread = None
 		self.output_url = ""
 		self.error_msg = None
 		self.connect_ui_items()
 		methods.load_creds(self)
+		methods.update_start_btn_text(self)
 
 	def connect_ui_items(self):
 
@@ -25,10 +26,11 @@ class Window(QMainWindow):
 			validator = QtGui.QRegExpValidator(regex)
 			time_input.setValidator(validator)
 
-		# Connect buttons to methods
-		self.open_video_btn.clicked.connect(lambda: methods.choose_video(self))
+		# Connect methods to UI
+		self.open_video_btn.clicked.connect(lambda: methods.choose_video_file(self))
 		self.start_btn.clicked.connect(lambda: methods.handle_start_click(self))
 		self.save_login_btn.clicked.connect(lambda: methods.save_creds(self))
+		self.destination_dropdown.currentTextChanged.connect(lambda: methods.update_start_btn_text(self))
 
 
 app = QApplication(sys.argv)

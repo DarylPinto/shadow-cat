@@ -1,11 +1,11 @@
 import os
 import subprocess
 import requests
+import time
 import gfy
 from obfuscate import sys_encode, sys_decode, decode
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore
-import time
 
 # Run background processes on a different thread
 class ExecuteThread(QtCore.QThread):
@@ -20,8 +20,10 @@ class ExecuteThread(QtCore.QThread):
 	def run(self):
 		try:
 			self.func(*self.arguments)
-		except:	
+		except Exception as e:	
 			self.gui.error_msg = "An unexpected error occurred."
+			print("Error executing function {}:".format(func.__name__))
+			print(e)
 
 ###########
 # METHODS #
@@ -49,8 +51,17 @@ def error_window(text):
 	msg.setIcon(3)
 	msg.exec()
 
+# Changes start button text
+def update_start_btn_text(gui):
+	if gui.destination_dropdown.currentText() == "Gfycat":
+		gui.start_btn.setText("Create Gfycat")
+	elif gui.destination_dropdown.currentText() == "Streamable":
+		gui.start_btn.setText("Create Streamable")
+	else:
+		gui.start_btn.setText("Create Video File")
+
 # Open file selection dialog to select video
-def choose_video(gui):
+def choose_video_file(gui):
 	dialog = QFileDialog()
 	file_filter = "Video Files (*.mp4);;All Files (*)"
 	video, _filter = dialog.getOpenFileName(dialog, "", "", file_filter)
@@ -61,9 +72,8 @@ def choose_video(gui):
 # Process video with  ffmpeg
 def process_video(video, start, end, crop, merge_audio, destination):
 	output_path = "video.mp4"
-	if destination not in ["Gfycat", "Streamable"]:
-		cur_time = str(time.time())
-		output_path = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop\\video-'+cur_time+'.mp4')
+	if destination not in ["Gfycat", "Streamable"]:	
+		output_path = os.path.join(os.path.expanduser("~/Desktop"), "video-" + str(time.time()) + ".mp4")
 	os.chdir("box")
 	subprocess.call(
 		'ffmpeg -y -i "%s" -ss %s -to %s %s %s -c:v libx264 -crf 20 %s' % (video, start, end, crop, merge_audio, output_path),
@@ -103,8 +113,8 @@ def load_creds(gui):
 		gui.gfycat_password.setText(creds["gp"])	
 		gui.streamable_username.setText(creds["su"])	
 		gui.streamable_password.setText(creds["sp"])	
-	except:
-		pass
+	except Exception as e:
+		print(e)
 
 def save_creds(gui):
 	creds = sys_encode({
@@ -127,7 +137,7 @@ def handle_start_click(gui):
 		end = gui.end_time_input.text()
 		destination = gui.destination_dropdown.currentText()
 		crop = "-filter:v crop=ih/60*73:ih" if gui.crop_checkbox.isChecked() else ""
-		audio_track_count = os.popen('ffmpeg -i %s 2>&1' % (video)).read().count(": Audio:") # Extremely hacky way to count audio tracks without ffprobe
+		audio_track_count = os.popen("ffmpeg -i %s 2>&1" % (video)).read().count(": Audio:") # Extremely hacky way to count audio tracks without ffprobe
 		merge_audio = "-filter_complex amix=inputs=%s" % (audio_track_count) if gui.merge_audio_checkbox.isChecked() and audio_track_count > 0 else ""
 
 		gfycat_user = gui.gfycat_username.text()

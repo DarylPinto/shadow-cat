@@ -4,5 +4,6 @@ dist/
 box/*
 !box/icon.ico
 !box/layout.ui
+!box/config
 Shadow Cat.spec
 .DS_Store

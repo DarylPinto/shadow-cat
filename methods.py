@@ -2,10 +2,14 @@ import os
 import subprocess
 import requests
 import time
+import json
 import gfy
-from obfuscate import sys_encode, sys_decode, decode
+from obfuscate import encode, decode
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore
+
+# Load Config
+CONFIG = json.loads(open("./box/config").read())
 
 # Run background processes on a different thread
 class ExecuteThread(QtCore.QThread):
@@ -54,9 +58,9 @@ def error_window(text):
 # Changes start button text
 def update_start_btn_text(gui):
 	if gui.destination_dropdown.currentText() == "Gfycat":
-		gui.start_btn.setText("Create Gfycat")
+		gui.start_btn.setText("Create Gfy")
 	elif gui.destination_dropdown.currentText() == "Streamable":
-		gui.start_btn.setText("Create Streamable")
+		gui.start_btn.setText("Create Streamable Video")
 	else:
 		gui.start_btn.setText("Create Video File")
 
@@ -72,11 +76,12 @@ def choose_video_file(gui):
 # Process video with  ffmpeg
 def process_video(video, start, end, crop, merge_audio, destination):
 	output_path = "video.mp4"
-	if destination not in ["Gfycat", "Streamable"]:	
-		output_path = os.path.join(os.path.expanduser("~/Desktop"), "video-" + str(time.time()) + ".mp4")
+	if destination not in ["Gfycat", "Streamable"]:
+		output_dir = os.path.expanduser("~/Desktop") if CONFIG["local_output_dir"] == "" else CONFIG["local_output_dir"]
+		output_path = os.path.join(output_dir, "video-" + str(time.time()) + ".mp4")
 	os.chdir("box")
 	subprocess.call(
-		'ffmpeg -y -i "%s" -ss %s -to %s %s %s -c:v libx264 -crf 20 %s' % (video, start, end, crop, merge_audio, output_path),
+		'ffmpeg -y -i "%s" -ss %s -to %s %s %s -c:v libx264 -crf %s %s' % (video, start, end, crop, merge_audio, CONFIG["crf"], output_path),
 		shell=True
 	)
 	os.chdir("..")
@@ -106,25 +111,27 @@ def upload_to_streamable(gui, username, password):
 	os.remove("./box/video.mp4")
 
 def load_creds(gui):
+	# TODO: Make sure shadow cat folder exists in appdata
 	try:
-		f = open("./box/creds", "r").read()
-		creds = sys_decode(f)
-		gui.gfycat_username.setText(creds["gu"])	
-		gui.gfycat_password.setText(creds["gp"])	
+		f = open(os.getenv('APPDATA')+"/creds", "r").read()
+		creds = decode(f)
+		gui.gfycat_username.setText(creds["gu"])
+		gui.gfycat_password.setText(creds["gp"])
 		gui.streamable_username.setText(creds["su"])	
 		gui.streamable_password.setText(creds["sp"])	
 	except Exception as e:
 		print(e)
 
 def save_creds(gui):
-	creds = sys_encode({
+	# TODO: Make sure shadow cat folder exists in appdata
+	creds = encode({
 		"gu": gui.gfycat_username.text(),
 		"gp": gui.gfycat_password.text(),
 		"su": gui.streamable_username.text(),
 		"sp": gui.streamable_password.text()
 	})
 
-	f = open("./box/creds", "w")
+	f = open(os.getenv('APPDATA')+"/creds", "w")
 	f.write(creds)
 	f.close()
 	gui.statusbar.showMessage("Saved", 1000)

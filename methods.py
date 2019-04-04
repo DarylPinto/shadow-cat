@@ -4,12 +4,14 @@ import requests
 import time
 import json
 import gfy
+from platform import system
 from obfuscate import encode, decode
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore
 
-# Load Config
+# Constants
 CONFIG = json.loads(open("./box/config").read())
+APPDATA = os.getenv("APPDATA") if system() == "Windows" else os.path.expanduser("~/Library/Application Support")
 
 # Run background processes on a different thread
 class ExecuteThread(QtCore.QThread):
@@ -55,14 +57,21 @@ def error_window(text):
 	msg.setIcon(3)
 	msg.exec()
 
-# Changes start button text
-def update_start_btn_text(gui):
+# Handle what happens when the destination changes
+def handle_destination_update(gui):
 	if gui.destination_dropdown.currentText() == "Gfycat":
 		gui.start_btn.setText("Create Gfy")
+		gui.anonymous_gfy.setEnabled(True)
+
 	elif gui.destination_dropdown.currentText() == "Streamable":
 		gui.start_btn.setText("Create Streamable Video")
+		gui.anonymous_gfy.setEnabled(False)
+		gui.anonymous_gfy.setChecked(False)
+		
 	else:
 		gui.start_btn.setText("Create Video File")
+		gui.anonymous_gfy.setEnabled(False)
+		gui.anonymous_gfy.setChecked(False)
 
 # Open file selection dialog to select video
 def choose_video_file(gui):
@@ -84,7 +93,7 @@ def process_video(video, start, end, crop, merge_audio, destination):
 
 	os.chdir("box")
 	subprocess.call(
-		'ffmpeg -y -i "%s" -ss %s -to %s %s %s -c:v libx264 -crf %s %s' % (video, start, end, crop, merge_audio, CONFIG["crf"], output_path),
+		'./ffmpeg -y -i "%s" -ss %s -to %s %s %s -c:v libx264 -crf %s %s' % (video, start, end, crop, merge_audio, CONFIG["crf"], output_path),
 		shell=True
 	)
 	os.chdir("..")
@@ -119,12 +128,12 @@ def upload_to_streamable(gui, username, password):
 
 def load_creds(gui):
 
-	if not os.path.exists(os.getenv('APPDATA')+"/shadowcat"):
-		os.mkdir(os.getenv('APPDATA')+"/shadowcat")
+	if not os.path.exists(APPDATA+"/shadowcat"):
+		os.mkdir(APPDATA+"/shadowcat")
 		print("Created folder in appdata")
 
 	try:
-		f = open(os.getenv('APPDATA')+"/shadowcat/creds", "r").read()
+		f = open(APPDATA+"/shadowcat/creds", "r").read()
 		creds = decode(f)
 		gui.gfycat_username.setText(creds["gu"])
 		gui.gfycat_password.setText(creds["gp"])
@@ -141,7 +150,7 @@ def save_creds(gui):
 		"sp": gui.streamable_password.text()
 	})
 
-	f = open(os.getenv('APPDATA')+"/shadowcat/creds", "w")
+	f = open(APPDATA+"/shadowcat/creds", "w")
 	f.write(creds)
 	f.close()
 	gui.statusbar.showMessage("Saved", 1000)

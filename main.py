@@ -16,7 +16,7 @@ class Window(QMainWindow):
 		self.error_msg = None
 		self.connect_ui_items()
 		methods.load_creds(self)
-		methods.update_start_btn_text(self)
+		methods.handle_destination_update(self)
 
 	def connect_ui_items(self):
 
@@ -30,7 +30,7 @@ class Window(QMainWindow):
 		self.open_video_btn.clicked.connect(lambda: methods.choose_video_file(self))
 		self.start_btn.clicked.connect(lambda: methods.handle_start_click(self))
 		self.save_login_btn.clicked.connect(lambda: methods.save_creds(self))
-		self.destination_dropdown.currentTextChanged.connect(lambda: methods.update_start_btn_text(self))
+		self.destination_dropdown.currentTextChanged.connect(lambda: methods.handle_destination_update(self))
 
 
 app = QApplication(sys.argv)

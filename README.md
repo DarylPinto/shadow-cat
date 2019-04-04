@@ -19,4 +19,4 @@ Now you don't have to! Open your video in Shadow Cat, and you'll have a link to 
 
 ## Downloads
 
-* [Windows](https://github.com/DarylPinto/shadow-cat/releases/download/v1.0.0/Shadow.Cat.zip)
+* [Windows](https://github.com/DarylPinto/shadow-cat/releases/download/v1.1.0/Shadow.Cat.zip)

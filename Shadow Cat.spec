@@ -8,7 +8,8 @@ a = Analysis(['main.py'],
              binaries=[],
              datas=[
               ('box/layout.ui', 'box'),
-              ('box/icon.ico', 'box')
+              ('box/icon.ico', 'box'),
+              ('box/config', 'box') 
              ],
              hiddenimports=[],
              hookspath=[],

@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Shadow Cat</string>
+   <string>Shadow Cat (v1.1.0)</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -151,6 +151,13 @@
                 </widget>
                </item>
                <item>
+                <widget class="QCheckBox" name="anonymous_gfy">
+                 <property name="text">
+                  <string>Force Anonymous Upload (Gfycat Only)</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QCheckBox" name="crop_checkbox">
                  <property name="text">
                   <string>Crop to SSBM Aspect Ratio (73:60)</string>
@@ -220,17 +227,17 @@
              <item row="1" column="1">
               <widget class="QLineEdit" name="gfycat_username"/>
              </item>
-             <item row="4" column="1">
-              <widget class="QLineEdit" name="gfycat_password">
-               <property name="echoMode">
-                <enum>QLineEdit::Password</enum>
-               </property>
-              </widget>
-             </item>
              <item row="3" column="1">
               <widget class="QLabel" name="label_4">
                <property name="text">
                 <string>Password</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QLineEdit" name="gfycat_password">
+               <property name="echoMode">
+                <enum>QLineEdit::Password</enum>
                </property>
               </widget>
              </item>

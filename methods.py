@@ -26,7 +26,7 @@ class ExecuteThread(QtCore.QThread):
 			self.func(*self.arguments)
 		except Exception as e:	
 			self.gui.error_msg = "An unexpected error occurred."
-			print("Error executing function {}:".format(func.__name__))
+			# print("Error executing function {}:".format(func.__name__))
 			print(e)
 
 ###########
@@ -67,6 +67,7 @@ def update_start_btn_text(gui):
 # Open file selection dialog to select video
 def choose_video_file(gui):
 	dialog = QFileDialog()
+	dialog.setDirectory(os.path.expanduser("~/Desktop"))
 	file_filter = "Video Files (*.mp4);;All Files (*)"
 	video, _filter = dialog.getOpenFileName(dialog, "", "", file_filter)
 	if(video):
@@ -87,14 +88,18 @@ def process_video(video, start, end, crop, merge_audio, destination):
 	os.chdir("..")
 
 # Upload to Gfycat
-def upload_to_gfycat(gui, username=None, password=None):
+def upload_to_gfycat(gui, username=None, password=None, forceAnonymous=False):
 
 	f = open("./box/cat", "r").read()
 	cat = decode(f)
 
-	# Upload anonymously if username or password not present
-	anonymous = not (username or password)
-
+	# Upload anonymously if (username or password not present) OR forceAnonymous
+	anonymous = (not (username or password)) or forceAnonymous
+	
+	if anonymous:
+		username = None
+		password = None
+	
 	Gfycat = gfy.Client(cat["cid"], cat["csec"], username, password)
 	gui.output_url = Gfycat.upload("./box/video.mp4", anonymous=anonymous)	
 	os.remove("./box/video.mp4")
@@ -111,9 +116,13 @@ def upload_to_streamable(gui, username, password):
 	os.remove("./box/video.mp4")
 
 def load_creds(gui):
-	# TODO: Make sure shadow cat folder exists in appdata
+
+	if not os.path.exists(os.getenv('APPDATA')+"/shadowcat"):
+		os.mkdir(os.getenv('APPDATA')+"/shadowcat")
+		print("Created folder in appadata")
+
 	try:
-		f = open(os.getenv('APPDATA')+"/creds", "r").read()
+		f = open(os.getenv('APPDATA')+"/shadowcat/creds", "r").read()
 		creds = decode(f)
 		gui.gfycat_username.setText(creds["gu"])
 		gui.gfycat_password.setText(creds["gp"])
@@ -131,7 +140,7 @@ def save_creds(gui):
 		"sp": gui.streamable_password.text()
 	})
 
-	f = open(os.getenv('APPDATA')+"/creds", "w")
+	f = open(os.getenv('APPDATA')+"/shadowcat/creds", "w")
 	f.write(creds)
 	f.close()
 	gui.statusbar.showMessage("Saved", 1000)
@@ -149,9 +158,12 @@ def handle_start_click(gui):
 
 		gfycat_user = gui.gfycat_username.text()
 		gfycat_pass = gui.gfycat_password.text()
+		gfycat_anonymous = gui.anonymous_gfy.isChecked()
 		streamable_user = gui.streamable_username.text()
 		streamable_pass = gui.streamable_password.text()
 	
+		print(gfycat_anonymous)
+
 		# Ensure trimmed video length is at least 1 second	
 		if(timestamp_to_secs(end) + 1 - timestamp_to_secs(start) <= 1):
 			return info_window(
@@ -184,7 +196,7 @@ def handle_start_click(gui):
 				if destination == "Streamable":
 					gui.background_thread = ExecuteThread(gui, upload_to_streamable, [gui, streamable_user, streamable_pass])
 				else:
-					gui.background_thread = ExecuteThread(gui, upload_to_gfycat, [gui, gfycat_user, gfycat_pass])
+					gui.background_thread = ExecuteThread(gui, upload_to_gfycat, [gui, gfycat_user, gfycat_pass, gfycat_anonymous])
 				gui.background_thread.start()
 
 				def done():

@@ -78,8 +78,10 @@ def choose_video_file(gui):
 def process_video(video, start, end, crop, merge_audio, destination):
 	output_path = "video.mp4"
 	if destination not in ["Gfycat", "Streamable"]:
+		# Output locally to desktop unless an alternative path is specified in config file	
 		output_dir = os.path.expanduser("~/Desktop") if CONFIG["local_output_dir"] == "" else CONFIG["local_output_dir"]
 		output_path = os.path.join(output_dir, "video-" + str(time.time()) + ".mp4")
+
 	os.chdir("box")
 	subprocess.call(
 		'ffmpeg -y -i "%s" -ss %s -to %s %s %s -c:v libx264 -crf %s %s' % (video, start, end, crop, merge_audio, CONFIG["crf"], output_path),
@@ -93,7 +95,7 @@ def upload_to_gfycat(gui, username=None, password=None, forceAnonymous=False):
 	f = open("./box/cat", "r").read()
 	cat = decode(f)
 
-	# Upload anonymously if (username or password not present) OR forceAnonymous
+	# Upload anonymously if (username or password not present) OR forceAnonymous is set to true
 	anonymous = (not (username or password)) or forceAnonymous
 	
 	if anonymous:
@@ -119,7 +121,7 @@ def load_creds(gui):
 
 	if not os.path.exists(os.getenv('APPDATA')+"/shadowcat"):
 		os.mkdir(os.getenv('APPDATA')+"/shadowcat")
-		print("Created folder in appadata")
+		print("Created folder in appdata")
 
 	try:
 		f = open(os.getenv('APPDATA')+"/shadowcat/creds", "r").read()
@@ -131,8 +133,7 @@ def load_creds(gui):
 	except Exception as e:
 		print(e)
 
-def save_creds(gui):
-	# TODO: Make sure shadow cat folder exists in appdata
+def save_creds(gui):	
 	creds = encode({
 		"gu": gui.gfycat_username.text(),
 		"gp": gui.gfycat_password.text(),
@@ -161,8 +162,6 @@ def handle_start_click(gui):
 		gfycat_anonymous = gui.anonymous_gfy.isChecked()
 		streamable_user = gui.streamable_username.text()
 		streamable_pass = gui.streamable_password.text()
-	
-		print(gfycat_anonymous)
 
 		# Ensure trimmed video length is at least 1 second	
 		if(timestamp_to_secs(end) + 1 - timestamp_to_secs(start) <= 1):

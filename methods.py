@@ -85,15 +85,17 @@ def choose_video_file(gui):
 
 # Process video with  ffmpeg
 def process_video(video, start, end, crop, merge_audio, destination):
-	output_path = "video.mp4"
+	output_path = "video.webm"
+	encoding = "libvpx"
 	if destination not in ["Gfycat", "Streamable"]:
 		# Output locally to desktop unless an alternative path is specified in config file	
 		output_dir = os.path.expanduser("~/Desktop") if CONFIG["local_output_dir"] == "" else CONFIG["local_output_dir"]
 		output_path = os.path.join(output_dir, "video-" + str(time.time()) + ".mp4")
+		encoding = "libx264"
 
 	os.chdir("box")
 	subprocess.call(
-		'./ffmpeg -y -i "%s" -ss %s -to %s %s %s -c:v libx264 -crf %s %s' % (video, start, end, crop, merge_audio, CONFIG["crf"], output_path),
+		'./ffmpeg -y -i "%s" -ss %s -to %s %s %s -c:v %s -crf %s -b:v %s %s' % (video, start, end, crop, merge_audio, encoding, CONFIG["crf"], CONFIG["bitrate"], output_path),
 		shell=True
 	)
 	os.chdir("..")
@@ -112,19 +114,19 @@ def upload_to_gfycat(gui, username=None, password=None, forceAnonymous=False):
 		password = None
 	
 	Gfycat = gfy.Client(cat["cid"], cat["csec"], username, password)
-	gui.output_url = Gfycat.upload("./box/video.mp4", anonymous=anonymous)	
-	os.remove("./box/video.mp4")
+	gui.output_url = Gfycat.upload("./box/video.webm", anonymous=anonymous)	
+	os.remove("./box/video.webm")
 
 # Upload to Streamable
 def upload_to_streamable(gui, username, password):
 	r = requests.post("https://api.streamable.com/upload",
 		auth=(username, password),
-		files={"file": open("./box/video.mp4", "rb")}
+		files={"file": open("./box/video.webm", "rb")}
 	)
 
 	shortcode = r.json()["shortcode"]
 	gui.output_url = "https://streamable.com/" + shortcode
-	os.remove("./box/video.mp4")
+	os.remove("./box/video.webm")
 
 def load_creds(gui):
 

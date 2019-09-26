@@ -216,6 +216,7 @@ def handle_start_click(gui):
 						gui.statusbar.showMessage("Done")
 						info_window("Complete", "Link copied to clipboard (%s)" % (gui.output_url))
 						gui.statusbar.showMessage("Done", 1000)
+						QApplication.clipboard().setText(gui.output_url)
 					else:
 						error_window(gui.error_msg)
 						gui.statusbar.clearMessage()

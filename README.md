@@ -1,22 +1,48 @@
-# Shadow Cat
+START IT WITH: `npm run tauri dev`
 
-> Get your Shadowplays online quickly! 🚀
+# Getting Started with Create React App
 
-![Preview](https://i.imgur.com/HD1FEGL.png)
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## How to use
+## Available Scripts
 
-1) Click "Choose File" and open your Shadowplay clip
-2) Select the start/end times for your clip to be trimmed
-3) Select the destination (Gfycat, Streamable) and click the start button!
+In the project directory, you can run:
 
-## Why
+### `npm start`
 
-[Nvidia Shadowplay](https://www.nvidia.com/en-us/geforce/geforce-experience/shadowplay/) is an awesome way to capture gaming highlights, and I've used it countless times. However, the first thing you want to do after you save a highlight is show it to your friends or post it online, right? Well it can be *pretty darn annoying* to have to open up a video editor, crop and trim the video, render it and then go online to upload it.
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-Now you don't have to! Open your video in Shadow Cat, and you'll have a link to share in no time.
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
 
+### `npm test`
 
-## Downloads
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-* [Windows](https://github.com/DarylPinto/shadow-cat/releases/download/v1.1.0/Shadow.Cat.zip)
+### `npm run build`
+
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### `npm run eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
